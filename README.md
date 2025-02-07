@@ -4,4 +4,4 @@
 
 The self-balancing robot consists of 3D-printed PLA plates, 3/8"-16 threaded rods and nuts, and an Arduino Uno R3. The motors were sourced from Pololu as well as the L-brackets to mount to the 3D-printed plates and a mounting hub.
 
-(asm-1.JPG)
+![alt text](asm.jpg)

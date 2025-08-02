@@ -8,19 +8,20 @@ BNO080 myIMU;
 #define DIRECT 0
 #define REVERSE 1
 
-double Setpoint = -4.25;
-double delta = 0.25;
+double Setpoint = 0;
+double delta = 0.1;
 double lowSetpoint = Setpoint - delta;
 double highSetpoint = Setpoint + delta;
 
 double pitch = 0.0;
 double pitchFiltered = 0.0;
+double offset = 4.7; //2.78
 
 double Output = 0.0;
 
-double Kp = 9;
-double Ki = 0;
-double Kd = 0;
+double Kp = 3;
+double Ki = 1.5;
+double Kd = 2.5;
 
 PID myPID(&pitchFiltered, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
@@ -34,7 +35,7 @@ int LEFT_R_EN = 2;
 int RIGHT_L_EN = 5;
 int RIGHT_R_EN = 6;
 
-SimpleKalmanFilter simpleKalmanFilter(0.1, 0.1, 0.001);
+SimpleKalmanFilter simpleKalmanFilter(0.085, 0.085, 0.1);
 
 const long SERIAL_REFRESH_TIME = 100;
 long refresh_time;
@@ -71,12 +72,13 @@ void setup() {
 void calculateAngle() {
     if (myIMU.dataAvailable() == true) {
         pitch = (myIMU.getPitch()) * 180.0 / PI;     // Update global pitch variable
+        pitch = pitch + offset; //remove offset
     }
 }
 
 void filterAngle(){
-  //pitchFiltered = simpleKalmanFilter.updateEstimate(pitch);
-  pitchFiltered = pitch;
+  pitchFiltered = simpleKalmanFilter.updateEstimate(pitch);
+  //pitchFiltered = pitch + offset;   //remove offset
 }
 
 void moveForward(int speed) {
@@ -125,7 +127,7 @@ void loop() {
   calculateAngle();
   filterAngle();
 
-  Output = constrain(Output, 30, 255);
+  Output = constrain(Output, 20, 255); //30
 
   if (pitchFiltered < lowSetpoint && pitchFiltered > -45){
     myPID.SetControllerDirection(DIRECT);
@@ -140,12 +142,11 @@ void loop() {
   else{
     stopMoving();
   }
-
-  //Serial.print(", ");
+  
   //Serial.print("Angle:");
   //Serial.print(pitch);
   //Serial.print(",");
   //Serial.print("Filtered Angle:");
   //Serial.println(pitchFiltered);
-
+  
 }

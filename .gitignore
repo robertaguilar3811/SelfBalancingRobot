@@ -1,0 +1,15 @@
+# CODESYS temporary and generated files
+**.bootinfo
+**.bootinfo_guids
+**.compileinfo
+**.~u
+**.opt
+*.precompilecache
+*.tspproj.bak
+.apsession
+*.drawio.bkp
+
+# Optionally ignore specific output formats (adjust as needed)
+*.lib
+*.compiled-library
+*.sym_xml
